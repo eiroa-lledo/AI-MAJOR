@@ -1,0 +1,349 @@
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&display=swap');
+  :root {
+    --red: #A50034; --black: #231F20; --white: #FFFFFF;
+    --grove: #00966C; --pacific: #009CA6;
+    --pillar: #6E6259; --sand: #DDCBA4;
+    --sand-light: #F5F0E4; --red-light: #fce8ee;
+    --grove-light: #e6f7f2; --pillar-light: #f0ede9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .sheet { font-family: 'Source Sans 3', sans-serif; max-width: 880px; margin: 0 auto; background: var(--white); }
+  .header { background: var(--red); color: white; padding: 2rem 2.5rem 1.5rem; position: relative; overflow: hidden; }
+  .header::before { content: ''; position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; border-radius: 50%; border: 40px solid rgba(255,255,255,0.07); }
+  .header::after { content: ''; position: absolute; bottom: -60px; right: 80px; width: 140px; height: 140px; border-radius: 50%; border: 30px solid rgba(255,255,255,0.05); }
+  .header-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; opacity: 0.75; margin-bottom: 0.5rem; }
+  .header-title { font-family: 'Source Sans 3', sans-serif; font-size: 2.1rem; font-weight: 600; line-height: 1.15; margin: 0 0 0.3rem; }
+  .header-sub { font-size: 0.95rem; font-weight: 300; opacity: 0.85; }
+  .header-top { display: flex; align-items: flex-start; gap: 1rem; }
+  .header-text { flex: 1; }
+  .header-meta { margin-top: 1.1rem; display: flex; flex-wrap: wrap; gap: 1.5rem; font-size: 11px; opacity: 0.75; }
+  .header-meta strong { font-weight: 600; opacity: 1; }
+  .divider-black { height: 4px; background: var(--black); }
+  .body { padding: 1.5rem 2.5rem 2rem; }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--red); margin: 1.8rem 0 0.75rem; border-bottom: 1.5px solid var(--sand); padding-bottom: 5px; }
+  .courses-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .course-card { border: 1px solid #e8e3da; border-left: 3px solid var(--red); border-radius: 3px; padding: 0.7rem 0.9rem; background: #fdfcfa; }
+  .course-card.addreq { border-left-color: var(--grove); }
+  .course-card.elective { border-left-color: var(--pillar); }
+  .course-code { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 1px; color: var(--red); }
+  .course-card.addreq .course-code { color: var(--grove); }
+  .course-card.elective .course-code { color: var(--pillar); }
+  .course-title { font-size: 12.5px; font-weight: 600; color: var(--black); margin: 0 0 3px; line-height: 1.3; }
+  .course-prereq { font-size: 11px; color: var(--pillar); margin-bottom: 4px; }
+  .course-desc { font-size: 11.5px; color: #555; line-height: 1.55; }
+  .badge { display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; margin-bottom: 4px; }
+  .badge-create { background: var(--red-light); color: var(--red); }
+  .badge-addreq { background: var(--grove-light); color: #005c41; }
+  .badge-elective { background: var(--pillar-light); color: #4a3f39; }
+  .electives-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid #e0dbd0; border-radius: 4px; overflow: hidden; }
+  .elective-row { display: grid; grid-template-columns: 72px 1fr; border-bottom: 1px solid #ede8de; }
+  .elective-row:last-child { border-bottom: none; }
+  .elec-code { font-size: 10px; font-weight: 600; color: var(--pillar); padding: 6px 8px; background: var(--sand-light); border-right: 1px solid #e0dbd0; display: flex; align-items: center; line-height: 1.3; }
+  .elec-name { font-size: 11.5px; color: var(--black); padding: 6px 10px; display: flex; align-items: center; background: #fdfcfa; line-height: 1.3; }
+  .elec-badge { font-size: 8.5px; font-weight: 600; letter-spacing: 0.5px; padding: 1px 5px; border-radius: 2px; margin-left: 6px; flex-shrink: 0; }
+  .elec-badge.new { background: var(--grove-light); color: #005c41; }
+  .elec-badge.create { background: var(--red-light); color: var(--red); }
+  .elec-col-header { background: #6E6259; color: white; padding: 5px 10px; font-size: 9.5px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; grid-column: 1 / -1; }
+  .plan-header-row { background: #6E6259; color: white; padding: 0.5rem 0.9rem; font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; display: grid; grid-template-columns: 100px 1fr 60px; }
+  .plan-header-row .plan-cr-hdr { color: white; opacity: 0.8; text-align: center; }
+  .plan-pair { display: grid; grid-template-columns: 100px 1fr 60px; border-bottom: 1px solid #ede8de; }
+  .plan-pair:last-child { border-bottom: none; }
+  .plan-term { background: #DDCBA4; color: var(--black); padding: 0.6rem 0.9rem; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid #cfc0a0; }
+  .plan-pair.alt .plan-term { background: #d0b990; }
+  .plan-term .year { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.6; margin-bottom: 1px; }
+  .plan-term .sem { font-size: 12px; font-weight: 600; color: var(--black); }
+  .plan-courses { padding: 0.6rem 0.9rem; font-size: 11.5px; color: var(--black); line-height: 1.65; background: #fff; }
+  .plan-pair.alt .plan-courses { background: #fafaf8; }
+  .plan-courses .note { font-size: 10.5px; color: var(--pillar); margin-top: 2px; }
+  .plan-cr { padding: 0.6rem 0.5rem; font-size: 11px; font-weight: 600; color: var(--pillar); display: flex; align-items: center; justify-content: center; background: var(--sand-light); border-left: 1px solid #e8e3da; }
+  .tracks-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .track-card { border-radius: 4px; overflow: hidden; }
+  .track-header { padding: 0.75rem 1rem; color: white; background: #6E6259; }
+  .track-name { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.75; margin-bottom: 3px; }
+  .track-tagline { font-family: 'Source Sans 3', sans-serif; font-size: 14px; font-weight: 600; line-height: 1.2; }
+  .track-body { border: 1px solid #e0dbd0; border-top: none; border-radius: 0 0 4px 4px; padding: 0.7rem 1rem; background: #fdfcfa; }
+  .track-course { font-size: 11.5px; color: var(--black); padding: 4px 0; border-bottom: 1px solid #ede8de; display: flex; align-items: baseline; gap: 6px; line-height: 1.3; }
+  .track-course:last-child { border-bottom: none; }
+  .track-code { font-size: 10px; font-weight: 600; color: var(--pillar); min-width: 62px; flex-shrink: 0; }
+  .track-jobs { font-size: 10.5px; color: var(--pillar); margin-top: 7px; padding-top: 5px; border-top: 1px dashed var(--sand); line-height: 1.5; }
+  .track-jobs strong { color: var(--black); font-weight: 600; }
+  .note-box { background: var(--sand-light); border: 1px solid var(--sand); border-left: 3px solid var(--red); border-radius: 3px; padding: 0.75rem 1rem; font-size: 11.5px; color: #555; line-height: 1.6; margin-top: 1.2rem; }
+  .note-box strong { color: var(--red); }
+  .window-icon { width: 26px; height: 26px; opacity: 0.85; flex-shrink: 0; margin-top: 4px; }
+</style>
+
+<div class="sheet">
+  <div class="header">
+    <div class="header-top">
+      <div class="header-text">
+        <div class="header-eyebrow">Fowler School of Engineering | Proposed Curriculum Revision</div>
+        <div class="header-title">Applied Artificial Intelligence, B.S.</div>
+        <div class="header-sub">New Courses, 4-Year Plan &amp; Elective Tracks | 2026-27</div>
+      </div>
+      <svg class="window-icon" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="4" width="23" height="23" rx="2" fill="rgba(255,255,255,0.65)"/>
+        <rect x="33" y="4" width="23" height="23" rx="2" fill="rgba(255,255,255,0.65)"/>
+        <rect x="4" y="33" width="23" height="23" rx="2" fill="rgba(255,255,255,0.65)"/>
+        <rect x="33" y="33" width="23" height="23" rx="2" fill="rgba(255,255,255,0.65)"/>
+      </svg>
+    </div>
+    <div class="header-meta">
+      <span><strong>79</strong> total credits</span>
+      <span><strong>4</strong> new core courses to create</span>
+      <span><strong>4</strong> new elective courses to create</span>
+      <span><strong>1</strong> existing course added as requirement</span>
+      <span>Dr. Elia Eiroa-Lledo | March 2026</span>
+    </div>
+  </div>
+  <div class="divider-black"></div>
+
+  <div class="body">
+
+    <div class="section-label">New core courses requiring creation</div>
+    <div class="courses-grid">
+      <div class="course-card">
+        <span class="badge badge-create">Create | Core</span>
+        <div class="course-code">CPSC 454</div>
+        <div class="course-title">Large Language Models &amp; Generative AI</div>
+        <div class="course-prereq">Prereq: CPSC 393</div>
+        <div class="course-desc">Transformers, fine-tuning (LoRA/QLoRA), RLHF, RAG, prompt engineering, and responsible deployment. Students fine-tune open-source LLMs and build end-to-end generative AI applications.</div>
+      </div>
+      <div class="course-card">
+        <span class="badge badge-create">Create | Core</span>
+        <div class="course-code">CPSC 455</div>
+        <div class="course-title">Reinforcement Learning</div>
+        <div class="course-prereq">Prereq: CPSC 393, MATH 203</div>
+        <div class="course-desc">MDPs, Q-learning, DQN, policy gradients (PPO), actor-critic architectures, and model-based RL. Applications span game playing, robotics simulation, and RLHF for language models.</div>
+      </div>
+      <div class="course-card">
+        <span class="badge badge-create">Create | Core</span>
+        <div class="course-code">CPSC 460</div>
+        <div class="course-title">Distributed AI &amp; MLOps</div>
+        <div class="course-prereq">Prereq: CPSC 454</div>
+        <div class="course-desc">Production AI engineering: distributed training (DDP, FSDP), model serving (vLLM, Triton), experiment tracking (MLflow, W&amp;B), Docker/Kubernetes, CI/CD for ML, and model drift detection.</div>
+      </div>
+      <div class="course-card">
+        <span class="badge badge-create">Create | Core | Piloting Fall 2025</span>
+        <div class="course-code">CPSC 468</div>
+        <div class="course-title">Agentic AI Systems</div>
+        <div class="course-prereq">Prereq: CPSC 454 | Being offered as CPSC 370, Fall 2025</div>
+        <div class="course-desc">LLM-based agent architectures, tool use, function calling, multi-agent coordination, planning and memory systems, and safety for autonomous AI. Students design and evaluate agentic pipelines.</div>
+      </div>
+    </div>
+
+    <div class="section-label">Existing course added as new requirement</div>
+    <div style="max-width: calc(50% - 5px);">
+      <div class="course-card addreq">
+        <span class="badge badge-addreq">Add Req | Core</span>
+        <div class="course-code">CPSC 445</div>
+        <div class="course-title">High Performance Computing</div>
+        <div class="course-prereq">Prereq: CPSC 350 | Moved from elective to core</div>
+        <div class="course-desc">OpenMP, MPI, parallel performance evaluation. Provides the parallelism foundations students need before CPSC 450 (GPU Programming &amp; CUDA). No course changes needed.</div>
+      </div>
+    </div>
+
+    <div class="section-label">New elective courses requiring creation</div>
+    <div class="courses-grid">
+      <div class="course-card elective">
+        <span class="badge badge-elective">Create | Elective</span>
+        <div class="course-code">CPSC 450</div>
+        <div class="course-title">GPU Programming &amp; CUDA</div>
+        <div class="course-prereq">Prereq: CPSC 445, CPSC 231</div>
+        <div class="course-desc">Massively parallel programming on NVIDIA GPUs using CUDA C/C++. Thread/block/grid hierarchy, memory hierarchy, cuBLAS/cuDNN, and PyTorch CUDA extensions. Students implement and benchmark GPU kernels.</div>
+      </div>
+      <div class="course-card elective">
+        <span class="badge badge-elective">Create | Elective | Cross-list CPSC 542</span>
+        <div class="course-code">CPSC 470</div>
+        <div class="course-title">Computer Vision</div>
+        <div class="course-prereq">Prereq: CPSC 393</div>
+        <div class="course-desc">Neural network-based deep learning methods for computer vision. CNNs, object detection, segmentation, image generation (GANs, diffusion models), and multi-modal vision-language models. Cross-lists with CPSC 542 (graduate). Prereq replaces MS admission requirement.</div>
+      </div>
+      <div class="course-card elective">
+        <span class="badge badge-elective">Create | Elective | Cross-list CPSC 543</span>
+        <div class="course-code">CPSC 480</div>
+        <div class="course-title">Natural Language Processing</div>
+        <div class="course-prereq">Prereq: CPSC 393</div>
+        <div class="course-desc">Data-driven NLP methods from industry and academia: linguistics, tokenization, embeddings, sequence models, and modern transformer-based approaches. Cross-lists with CPSC 543 (graduate). Prereq replaces MS admission requirement.</div>
+      </div>
+      <div class="course-card elective">
+        <span class="badge badge-elective">Create | Elective | Or align with CPSC 370 Fall 2026</span>
+        <div class="course-code">CPSC 475</div>
+        <div class="course-title">AI Ethics, Law &amp; Policy</div>
+        <div class="course-prereq">Prereq: CPSC 285</div>
+        <div class="course-desc">Algorithmic bias, fairness metrics, explainability (LIME, SHAP), differential privacy, EU AI Act, US regulatory frameworks, and responsible AI practices. Case studies from healthcare, criminal justice, and hiring.</div>
+      </div>
+    </div>
+
+    <div class="section-label">Grand Challenges Initiative (3 credits)</div>
+    <div class="electives-grid">
+      <div class="elec-col-header">Required</div>
+      <div class="elective-row"><div class="elec-code">GCI 101</div><div class="elec-name">Grand Challenges in Science &amp; Engineering<span class="elec-badge new">New 2025-26</span></div></div>
+    </div>
+
+    <div class="section-label">Colloquium Requirement (3 credits)</div>
+    <div class="electives-grid">
+      <div class="elec-col-header">Required - Three 1-credit sections</div>
+      <div class="elective-row"><div class="elec-code">CPSC 298</div><div class="elec-name">Computer Science Colloquium x3</div></div>
+    </div>
+
+    <div class="section-label">Lower-division requirements (25 credits)</div>
+    <div class="electives-grid">
+      <div class="elec-col-header">All lower-division required courses</div>
+      <div class="elective-row"><div class="elec-code">ENGR 100</div><div class="elec-name">Introduction to AI Tools<span class="elec-badge new">New 2025-26</span></div></div>
+      <div class="elective-row"><div class="elec-code">ENGR 101</div><div class="elec-name">Foundations of Design and Fabrication</div></div>
+      <div class="elective-row"><div class="elec-code">MATH 110</div><div class="elec-name">Single Variable Calculus I</div></div>
+      <div class="elective-row"><div class="elec-code">MATH 203</div><div class="elec-name">Introduction to Statistics</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 230</div><div class="elec-name">Computer Science I (Python)</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 231</div><div class="elec-name">Computer Science II (Java/OOP)</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 240</div><div class="elec-name">Data Engineering and Visualization<span class="elec-badge new">New 2025-26</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 285</div><div class="elec-name">Social &amp; Ethical Issues in Computing</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 293</div><div class="elec-name">Mathematical Foundations of Machine Learning</div></div>
+    </div>
+
+    <div class="section-label">Upper-division requirements (33 credits)</div>
+    <div class="electives-grid">
+      <div class="elec-col-header">All upper-division required courses</div>
+      <div class="elective-row"><div class="elec-code">CPSC 349</div><div class="elec-name">Human Factors</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 350</div><div class="elec-name">Data Structures and Algorithms</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 390</div><div class="elec-name">Artificial Intelligence</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 392</div><div class="elec-name">Introduction to Data Science</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 393</div><div class="elec-name">Machine Learning</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 408</div><div class="elec-name">Database Management</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 445</div><div class="elec-name">High Performance Computing<span class="elec-badge new">Add Req</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 454</div><div class="elec-name">Large Language Models &amp; Generative AI<span class="elec-badge create">New course</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 455</div><div class="elec-name">Reinforcement Learning<span class="elec-badge create">New course</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 460</div><div class="elec-name">Distributed AI &amp; MLOps<span class="elec-badge create">New course</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 468</div><div class="elec-name">Agentic AI Systems<span class="elec-badge create">New course</span></div></div>
+    </div>
+
+    <div class="section-label">Capstone (3 credits)</div>
+    <div class="electives-grid">
+      <div class="elec-col-header">Required capstone</div>
+      <div class="elective-row"><div class="elec-code">CPSC 497</div><div class="elec-name">Capstone</div></div>
+    </div>
+
+    <div class="section-label">Full elective list (choose 4)</div>
+    <div class="electives-grid">
+      <div class="elec-col-header">All eligible electives</div>
+      <div class="elective-row"><div class="elec-code">CPSC 353</div><div class="elec-name">Data Communications &amp; Networks<span class="elec-badge new">New to electives</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 355</div><div class="elec-name">Human Computer Interaction<span class="elec-badge new">New to electives</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 358</div><div class="elec-name">Assistive Technology</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 359</div><div class="elec-name">Computer-Supported Cooperative Work</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 360</div><div class="elec-name">Computer Graphics<span class="elec-badge new">New to electives</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 406</div><div class="elec-name">Algorithm Analysis<span class="elec-badge new">New to electives</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 430</div><div class="elec-name">Computational Economics</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 435</div><div class="elec-name">BioMedical Informatics</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 450</div><div class="elec-name">GPU Programming &amp; CUDA<span class="elec-badge create">New course</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 458</div><div class="elec-name">Web Engineering</div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 470</div><div class="elec-name">Computer Vision<span class="elec-badge create">New course</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 475</div><div class="elec-name">AI Ethics, Law &amp; Policy<span class="elec-badge create">New course</span></div></div>
+      <div class="elective-row"><div class="elec-code">CPSC 480</div><div class="elec-name">Natural Language Processing<span class="elec-badge create">New course</span></div></div>
+      <div class="elective-row"><div class="elec-code">ECON 452</div><div class="elec-name">Econometrics</div></div>
+      <div class="elective-row"><div class="elec-code">ENV 310</div><div class="elec-name">Geographic Information Systems</div></div>
+      <div class="elective-row"><div class="elec-code">ISP 363</div><div class="elec-name">Cybersecurity 1</div></div>
+      <div class="elective-row"><div class="elec-code">MATH 250</div><div class="elec-name">Discrete Mathematics</div></div>
+      <div class="elective-row"><div class="elec-code">MATH 303</div><div class="elec-name">Biostatistics</div></div>
+      <div class="elective-row"><div class="elec-code">MATH 360</div><div class="elec-name">Probability Theory</div></div>
+      <div class="elective-row"><div class="elec-code">MATH 361</div><div class="elec-name">Mathematical Statistics</div></div>
+      <div class="elective-row"><div class="elec-code">MGSC 406</div><div class="elec-name">Advanced Experimental Design &amp; Statistics</div></div>
+      <div class="elective-row"><div class="elec-code">MGSC 496</div><div class="elec-name">Special Topics: Applied Analytics</div></div>
+    </div>
+
+    <div class="section-label">Recommended elective tracks</div>
+    <div class="tracks-grid">
+      <div class="track-card">
+        <div class="track-header">
+          <div class="track-name">Track 1</div>
+          <div class="track-tagline">AI Engineering</div>
+        </div>
+        <div class="track-body">
+          <div class="track-course"><span class="track-code">CPSC 450</span>GPU Programming &amp; CUDA</div>
+          <div class="track-course"><span class="track-code">CPSC 480</span>Natural Language Processing</div>
+          <div class="track-course"><span class="track-code">CPSC 458</span>Web Engineering</div>
+          <div class="track-course"><span class="track-code">CPSC 353</span>Data Communications &amp; Networks</div>
+          <div class="track-jobs"><strong>Target roles:</strong> ML Engineer, GPU Engineer, LLM Engineer, Full-Stack AI Developer</div>
+        </div>
+      </div>
+      <div class="track-card">
+        <div class="track-header">
+          <div class="track-name">Track 2</div>
+          <div class="track-tagline">AI Science &amp; Research</div>
+        </div>
+        <div class="track-body">
+          <div class="track-course"><span class="track-code">MATH 250</span>Discrete Mathematics</div>
+          <div class="track-course"><span class="track-code">MATH 361</span>Mathematical Statistics</div>
+          <div class="track-course"><span class="track-code">CPSC 470</span>Computer Vision</div>
+          <div class="track-course"><span class="track-code">CPSC 406</span>Algorithm Analysis</div>
+          <div class="track-jobs"><strong>Target roles:</strong> AI Research Scientist, Data Scientist, Graduate school preparation</div>
+        </div>
+      </div>
+      <div class="track-card">
+        <div class="track-header">
+          <div class="track-name">Track 3</div>
+          <div class="track-tagline">Applied &amp; Domain AI</div>
+        </div>
+        <div class="track-body">
+          <div class="track-course"><span class="track-code">CPSC 435</span>BioMedical Informatics</div>
+          <div class="track-course"><span class="track-code">ECON 452</span>Econometrics</div>
+          <div class="track-course"><span class="track-code">CPSC 475</span>AI Ethics, Law &amp; Policy</div>
+          <div class="track-course"><span class="track-code">CPSC 360</span>Computer Graphics</div>
+          <div class="track-jobs"><strong>Target roles:</strong> Responsible AI, Healthcare AI, Fintech AI, Policy &amp; Compliance</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Suggested 4-year plan</div>
+    <div style="border: 1px solid #cfc0a0; border-radius: 4px; overflow: hidden;">
+      <div class="plan-header-row">
+        <span>Term</span><span>Courses</span><span class="plan-cr-hdr">Cr.</span>
+      </div>
+      <div class="plan-pair">
+        <div class="plan-term"><div class="year">Year 1</div><div class="sem">Fall</div></div>
+        <div class="plan-courses">MATH 110, CPSC 230, ENGR 101, CPSC 285<div class="note">Calculus I | Python | Design &amp; Fabrication | Ethics</div></div>
+        <div class="plan-cr">12</div>
+      </div>
+      <div class="plan-pair alt">
+        <div class="plan-term"><div class="year">Year 1</div><div class="sem">Spring</div></div>
+        <div class="plan-courses">MATH 203, CPSC 231, GCI 101, ENGR 100<div class="note">Statistics | OOP | Grand Challenges | AI Tools</div></div>
+        <div class="plan-cr">10</div>
+      </div>
+      <div class="plan-pair">
+        <div class="plan-term"><div class="year">Year 2</div><div class="sem">Fall</div></div>
+        <div class="plan-courses">CPSC 240, CPSC 293, CPSC 298 x1<div class="note">Data Engineering | Math Foundations of ML | Colloquium</div></div>
+        <div class="plan-cr">7</div>
+      </div>
+      <div class="plan-pair alt">
+        <div class="plan-term"><div class="year">Year 2</div><div class="sem">Spring</div></div>
+        <div class="plan-courses">CPSC 350, CPSC 392, CPSC 390, CPSC 298 x1<div class="note">DS&amp;A | Intro Data Science | Artificial Intelligence | Colloquium</div></div>
+        <div class="plan-cr">10</div>
+      </div>
+      <div class="plan-pair">
+        <div class="plan-term"><div class="year">Year 3</div><div class="sem">Fall</div></div>
+        <div class="plan-courses">CPSC 393, CPSC 349, CPSC 408, CPSC 445, CPSC 298 x1<div class="note">Machine Learning | Human Factors | Databases | HPC | Colloquium</div></div>
+        <div class="plan-cr">13</div>
+      </div>
+      <div class="plan-pair alt">
+        <div class="plan-term"><div class="year">Year 3</div><div class="sem">Spring</div></div>
+        <div class="plan-courses">CPSC 454, CPSC 455, Elective 1<div class="note">LLMs &amp; Generative AI | Reinforcement Learning | Elective</div></div>
+        <div class="plan-cr">9</div>
+      </div>
+      <div class="plan-pair">
+        <div class="plan-term"><div class="year">Year 4</div><div class="sem">Fall</div></div>
+        <div class="plan-courses">CPSC 460, CPSC 468, Elective 2, Elective 3<div class="note">Distributed AI &amp; MLOps | Agentic AI Systems | Electives 2 &amp; 3</div></div>
+        <div class="plan-cr">12</div>
+      </div>
+      <div class="plan-pair alt">
+        <div class="plan-term"><div class="year">Year 4</div><div class="sem">Spring</div></div>
+        <div class="plan-courses">Elective 4, CPSC 497<div class="note">Final Elective | Capstone</div></div>
+        <div class="plan-cr">6</div>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <strong>Open items for faculty discussion:</strong> (1) MATH 250 (Discrete Mathematics) is an elective and an advised prereq for students choosing Track 2 (AI Science &amp; Research) who plan to take CPSC 406 - advising notes should reflect this. (2) CPSC 470 and CPSC 480 cross-list with CPSC 542 and CPSC 543 - MS admission requirement replaced by CPSC 393. (3) CPSC 475 may align with CPSC 370 "Responsible AI" sections planned for Fall 2026. (4) MATH 360 remains available as a free elective for students who want additional probability background.
+    </div>
+
+  </div>
+</div>
